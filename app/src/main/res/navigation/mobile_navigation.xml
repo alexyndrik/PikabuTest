@@ -1,25 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+<navigation
+	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:id="@+id/mobile_navigation"
-	app:startDestination="@+id/navigation_home">
+	app:startDestination="@+id/navigation_feed">
 
 	<fragment
-		android:id="@+id/navigation_home"
-		android:name="com.alexyndrik.pikabutest.ui.home.HomeFragment"
-		android:label="@string/title_home"
-		tools:layout="@layout/fragment_home" />
+		android:id="@+id/navigation_feed"
+		android:name="com.alexyndrik.pikabutest.ui.feed.FeedFragment"
+		android:label="@string/title_feed"
+		tools:layout="@layout/fragment_feed" />
 
 	<fragment
-		android:id="@+id/navigation_dashboard"
-		android:name="com.alexyndrik.pikabutest.ui.dashboard.DashboardFragment"
-		android:label="@string/title_dashboard"
-		tools:layout="@layout/fragment_dashboard" />
+		android:id="@+id/navigation_liked_posts"
+		android:name="com.alexyndrik.pikabutest.ui.liked_posts.LikedPostsFragment"
+		android:label="@string/title_liked_posts"
+		tools:layout="@layout/fragment_liked_posts" />
 
-	<fragment
-		android:id="@+id/navigation_notifications"
-		android:name="com.alexyndrik.pikabutest.ui.notifications.NotificationsFragment"
-		android:label="@string/title_notifications"
-		tools:layout="@layout/fragment_notifications" />
 </navigation>

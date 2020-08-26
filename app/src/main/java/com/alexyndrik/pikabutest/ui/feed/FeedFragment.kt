@@ -1,4 +1,4 @@
-package com.alexyndrik.pikabutest.ui.home
+package com.alexyndrik.pikabutest.ui.feed
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,20 +10,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.alexyndrik.pikabutest.R
 
-class HomeFragment : Fragment() {
+class FeedFragment : Fragment() {
 
-    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var feedViewModel: FeedViewModel
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        homeViewModel =
-                ViewModelProviders.of(this).get(HomeViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_home, container, false)
+        feedViewModel =
+                ViewModelProviders.of(this).get(FeedViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_feed, container, false)
         val textView: TextView = root.findViewById(R.id.text_home)
-        homeViewModel.text.observe(viewLifecycleOwner, Observer {
+        feedViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
         return root

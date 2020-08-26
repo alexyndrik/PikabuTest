@@ -1,4 +1,4 @@
-package com.alexyndrik.pikabutest.ui.notifications
+package com.alexyndrik.pikabutest.ui.liked_posts
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,20 +10,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.alexyndrik.pikabutest.R
 
-class NotificationsFragment : Fragment() {
+class LikedPostsFragment : Fragment() {
 
-    private lateinit var notificationsViewModel: NotificationsViewModel
+    private lateinit var likedPostsViewModel: LikedPostsViewModel
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        notificationsViewModel =
-                ViewModelProviders.of(this).get(NotificationsViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_notifications, container, false)
-        val textView: TextView = root.findViewById(R.id.text_notifications)
-        notificationsViewModel.text.observe(viewLifecycleOwner, Observer {
+        likedPostsViewModel =
+                ViewModelProviders.of(this).get(LikedPostsViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_liked_posts, container, false)
+        val textView: TextView = root.findViewById(R.id.text_dashboard)
+        likedPostsViewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
         })
         return root
