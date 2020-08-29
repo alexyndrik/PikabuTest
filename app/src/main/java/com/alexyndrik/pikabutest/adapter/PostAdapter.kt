@@ -1,74 +1,44 @@
 package com.alexyndrik.pikabutest.adapter
 
-import android.content.Context
-import android.text.TextUtils
+import android.content.Intent
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.alexyndrik.pikabutest.LikesProvider
-import com.alexyndrik.pikabutest.PostModel
+import com.alexyndrik.pikabutest.ExtraName
 import com.alexyndrik.pikabutest.R
-import kotlinx.android.synthetic.main.view_post.view.*
+import com.alexyndrik.pikabutest.model.PostModel
+import com.alexyndrik.pikabutest.ui.activity.PostActivity
+import com.alexyndrik.pikabutest.utils.PostUtils
 
 
 class PostAdapter(
-    private val context: Context,
-    private val posts: List<PostModel>,
-    private val isPost: Boolean
+    private val fragment: Fragment,
+    private val requestCode: Int,
+    private val posts: List<PostModel>
 ) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = PostViewHolder(LayoutInflater.from(parent.context), parent)
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        holder.bind(posts[position])
+        holder.bind(fragment, requestCode, posts[position])
     }
 
     override fun getItemCount() = posts.size
 
-    inner class PostViewHolder(inflater: LayoutInflater, parent: ViewGroup)
+    class PostViewHolder(inflater: LayoutInflater, parent: ViewGroup)
         : RecyclerView.ViewHolder(inflater.inflate(R.layout.view_post, parent, false)) {
 
-        fun bind(post: PostModel) {
-            itemView.title.text = post.title
-
-            liked(itemView.liked, post.id)
-            itemView.liked.setOnClickListener {
-                if (LikesProvider.likedPosts.contains(post.id))
-                    LikesProvider.likedPosts.remove(post.id)
-                else
-                    LikesProvider.likedPosts.add(post.id)
-                liked(itemView.liked, post.id)
+        fun bind(fragment: Fragment, requestCode: Int, post: PostModel) {
+            itemView.setOnClickListener {
+                val intent = Intent(fragment.context, PostActivity::class.java)
+                intent.putExtra(ExtraName.position, adapterPosition)
+                intent.putExtra(ExtraName.post_id, post.id)
+                fragment.startActivityForResult(intent, requestCode)
             }
 
-            if (TextUtils.isEmpty(post.body))
-                itemView.body.visibility = View.GONE
-            else
-                itemView.body.text = post.body
-            if (!isPost) {
-                itemView.body.maxLines = 1
-                itemView.body.ellipsize = TextUtils.TruncateAt.END
-            }
-
-            if (post.images.isEmpty())
-                itemView.images.visibility = View.GONE
-            else
-                itemView.images.apply {
-                    setHasFixedSize(true)
-                    layoutManager = GridLayoutManager(context, if (isPost) 2 else post.images.size)
-                    adapter = ImageGalleryAdapter(context, post.images, isPost)
-                }
+            PostUtils.fillPostInfo(itemView, post, false)
         }
-    }
-
-    fun liked(view: ImageButton, id: Int) {
-        if (LikesProvider.likedPosts.contains(id))
-            view.setImageDrawable(ContextCompat.getDrawable(view.context, R.drawable.ic_liked_24))
-        else
-            view.setImageDrawable(ContextCompat.getDrawable(view.context, R.drawable.ic_not_liked_24))
     }
 
 }
