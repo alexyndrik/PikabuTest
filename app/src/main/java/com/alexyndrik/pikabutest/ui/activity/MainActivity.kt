@@ -1,9 +1,11 @@
-package com.alexyndrik.pikabutest
+package com.alexyndrik.pikabutest.ui.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.alexyndrik.pikabutest.R
 import com.alexyndrik.pikabutest.ui.fragment.FeedFragment
 import com.alexyndrik.pikabutest.ui.fragment.LikedPostsFragment
+import com.alexyndrik.pikabutest.utils.LikesProvider
 import kotlinx.android.synthetic.main.activity_main.*
 
 

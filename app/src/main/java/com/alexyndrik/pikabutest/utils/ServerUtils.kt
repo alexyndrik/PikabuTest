@@ -1,14 +1,13 @@
 package com.alexyndrik.pikabutest.utils
 
 import androidx.lifecycle.MutableLiveData
-import com.alexyndrik.pikabutest.PostModel
+import com.alexyndrik.pikabutest.model.PostModel
 
 object ServerUtils {
 
-    fun loadFeed(liveData: MutableLiveData<List<PostModel>>) {
-        val posts = ArrayList<PostModel>()
-        posts.add(PostModel(1, "Test-1", "test test test test test test test test test test test test test test test"))
-        posts.add(
+    private val posts = ArrayList<PostModel>().apply {
+        add(PostModel(1, "Test-1", "test test test test test test test test test test test test test test test"))
+        add(
             PostModel(2, "Test-2", "test test test test test test test test test test test test test test test",
             listOf(
                 "https:\\/\\/cs4.pikabu.ru\\/post_img\\/2015\\/10\\/21\\/11\\/1445451225_1177082666.jpg",
@@ -17,9 +16,18 @@ object ServerUtils {
             )
         )
         )
+    }
+
+    fun loadFeed(liveData: MutableLiveData<List<PostModel>>) {
         liveData.value = posts
     }
 
-//    fun loadPost(id: Int): PostModel? = posts[id]
+    fun loadPost(liveData: MutableLiveData<PostModel>, id: Int) {
+        for (post in posts)
+            if (post.id == id) {
+                liveData.value = post
+                return
+            }
+    }
 
 }
