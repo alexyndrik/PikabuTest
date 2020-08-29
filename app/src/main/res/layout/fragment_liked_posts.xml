@@ -4,7 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	tools:context=".ui.liked_posts.LikedPostsFragment">
+	tools:context=".ui.fragment.LikedPostsFragment">
 
 	<TextView
 		android:id="@+id/text_dashboard"

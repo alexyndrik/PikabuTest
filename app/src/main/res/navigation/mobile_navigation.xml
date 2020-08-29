@@ -8,13 +8,13 @@
 
 	<fragment
 		android:id="@+id/navigation_feed"
-		android:name="com.alexyndrik.pikabutest.ui.feed.FeedFragment"
+		android:name="com.alexyndrik.pikabutest.ui.fragment.FeedFragment"
 		android:label="@string/title_feed"
 		tools:layout="@layout/fragment_feed" />
 
 	<fragment
 		android:id="@+id/navigation_liked_posts"
-		android:name="com.alexyndrik.pikabutest.ui.liked_posts.LikedPostsFragment"
+		android:name="com.alexyndrik.pikabutest.ui.fragment.LikedPostsFragment"
 		android:label="@string/title_liked_posts"
 		tools:layout="@layout/fragment_liked_posts" />
 
