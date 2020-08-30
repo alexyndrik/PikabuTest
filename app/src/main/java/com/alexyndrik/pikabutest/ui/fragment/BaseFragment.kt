@@ -34,7 +34,7 @@ abstract class BaseFragment : Fragment() {
         view.feed.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(activity)
-            adapter = parentFragment?.let { PostAdapter(ArrayList(), MainActivity.likedPost) }
+            adapter = parentFragment?.let { PostAdapter(ArrayList(), MainActivity.likedPostLiveData) }
             addItemDecoration(DividerItemDecoration(activity, LinearLayoutManager.VERTICAL))
         }
     }
@@ -44,13 +44,13 @@ abstract class BaseFragment : Fragment() {
             doPostsObserver(view, it)
         }
 
-        MainActivity.posts.observe(viewLifecycleOwner, postsObserver)
+        MainActivity.postsLiveData.observe(viewLifecycleOwner, postsObserver)
 
         val likedPostObserver = Observer<Int> {
             doLikedPostObserver(view, it)
         }
 
-        MainActivity.likedPost.observe(viewLifecycleOwner, likedPostObserver)
+        MainActivity.likedPostLiveData.observe(viewLifecycleOwner, likedPostObserver)
     }
 
     abstract fun doPostsObserver(view: View, posts: ArrayList<PostModel>)

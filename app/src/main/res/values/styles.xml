@@ -8,7 +8,7 @@
 	</style>
 
 	<style name="Title" parent="TextAppearance.AppCompat.Headline">
-		<item name="android:textSize">40sp</item>
+		<item name="android:textSize">30sp</item>
 		<item name="android:textAlignment">center</item>
 		<item name="android:textColor">@color/colorTitle</item>
 		<item name="fontFamily">monospace</item>

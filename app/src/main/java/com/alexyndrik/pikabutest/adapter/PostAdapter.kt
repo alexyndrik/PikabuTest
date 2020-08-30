@@ -54,8 +54,8 @@ class PostAdapter(
 
         fun bind(post: PostModel, liveData: MutableLiveData<Int>) {
             itemView.setOnClickListener {
+                println("click ${post.title} -  ${post.id}")
                 val intent = Intent(it.context, PostActivity::class.java)
-                intent.putExtra(Const.POSITION, adapterPosition)
                 intent.putExtra(Const.POST_ID, post.id)
                 it.context.startActivity(intent)
             }

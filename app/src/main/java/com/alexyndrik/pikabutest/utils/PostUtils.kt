@@ -41,7 +41,7 @@ object PostUtils {
         else
             itemView.post_images.apply {
                 setHasFixedSize(true)
-                layoutManager = GridLayoutManager(context, if (isPost) 2 else post.images.size)
+                layoutManager = GridLayoutManager(context, if (isPost) 1 else post.images.size)
                 adapter = ImageGalleryAdapter(context, post.images, isPost)
             }
     }

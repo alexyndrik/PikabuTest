@@ -12,21 +12,23 @@ import com.alexyndrik.pikabutest.ui.fragment.FeedFragment
 import com.alexyndrik.pikabutest.ui.fragment.LikedPostsFragment
 import com.alexyndrik.pikabutest.utils.FragmentUtils
 import com.alexyndrik.pikabutest.utils.LikesProvider
-import com.alexyndrik.pikabutest.utils.ServerUtils
+import com.alexyndrik.pikabutest.utils.PikabuServerUtils
+import com.alexyndrik.pikabutest.utils.VolleyUtils
 import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        var posts = MutableLiveData<ArrayList<PostModel>>()
-        var likedPost = MutableLiveData<Int>()
+        var postsLiveData = MutableLiveData<ArrayList<PostModel>>()
+        var likedPostLiveData = MutableLiveData<Int>()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        VolleyUtils.init(this)
         LikesProvider.restoreLikedPosts(this)
 
         if (savedInstanceState == null) {
@@ -52,12 +54,14 @@ class MainActivity : AppCompatActivity() {
         val postsObserver = Observer<List<PostModel>> {
             progress_bar.visibility = View.GONE
         }
-        posts.observe(this, postsObserver)
+        postsLiveData.observe(this, postsObserver)
     }
 
     private fun loadPosts() {
+        println("main activity load posts")
         progress_bar.visibility = View.VISIBLE
-        ServerUtils.loadFeed(posts)
+//        PikabuServerUtils.loadFeed(postsLiveData)
+        PikabuServerUtils.loadFeed(postsLiveData)
     }
 
     override fun onPause() {
