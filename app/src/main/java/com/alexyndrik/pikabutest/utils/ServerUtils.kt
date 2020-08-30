@@ -18,7 +18,7 @@ object ServerUtils {
         )
     }
 
-    fun loadFeed(liveData: MutableLiveData<List<PostModel>>) {
+    fun loadFeed(liveData: MutableLiveData<ArrayList<PostModel>>) {
         liveData.value = posts
     }
 
