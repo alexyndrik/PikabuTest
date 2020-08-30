@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-import com.alexyndrik.pikabutest.ExtraName
+import com.alexyndrik.pikabutest.Const
 import com.alexyndrik.pikabutest.R
 import com.alexyndrik.pikabutest.model.PostModel
 import com.alexyndrik.pikabutest.utils.LikesProvider
@@ -26,7 +26,7 @@ class PostActivity : AppCompatActivity() {
         setContentView(R.layout.view_post)
 
         postViewModel = PostViewModel()
-        val id = intent.getIntExtra(ExtraName.post_id, -1)
+        val id = intent.getIntExtra(Const.POST_ID, -1)
 //        if (id == -1)
 
         init()
@@ -37,14 +37,14 @@ class PostActivity : AppCompatActivity() {
         post_view.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
 
         val observer = Observer<PostModel> {
-            progressBar.visibility = View.GONE
-            PostUtils.fillPostInfo(post_view, it, true)
+            progress_bar.visibility = View.GONE
+            PostUtils.fillPostInfo(post_view, it, true, MainActivity.likedPost)
         }
         postViewModel.post.observe(this, observer)
     }
 
     private fun loadPost(id: Int) {
-        progressBar.visibility = View.VISIBLE
+        progress_bar.visibility = View.VISIBLE
         ServerUtils.loadPost(postViewModel.post, id)
     }
 
@@ -55,7 +55,7 @@ class PostActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val returnIntent = Intent()
-        returnIntent.putExtra(ExtraName.position, intent.getIntExtra(ExtraName.position, -1))
+        returnIntent.putExtra(Const.POSITION, intent.getIntExtra(Const.POSITION, -1))
         setResult(RESULT_OK, returnIntent)
         super.finish()
     }

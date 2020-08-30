@@ -8,25 +8,24 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.alexyndrik.pikabutest.R
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.view_image.view.*
 
 class ImageGalleryAdapter(
     private val context: Context,
     private val images: List<String>,
     private val isPost: Boolean
-) : RecyclerView.Adapter<ImageGalleryAdapter.MyViewHolder>() {
+) : RecyclerView.Adapter<ImageGalleryAdapter.ImageViewHolder>() {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): MyViewHolder {
-        val context = parent.context
-        val inflater = LayoutInflater.from(context)
-        val photoView = inflater.inflate(R.layout.view_image, parent, false)
-        return MyViewHolder(photoView)
+    ): ImageViewHolder {
+        val imageView = LayoutInflater.from(context).inflate(R.layout.view_image, parent, false)
+        return ImageViewHolder(imageView)
     }
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val imageView = holder.photoImageView
+    override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
+        val imageView = holder.itemView.image
 //        val imageView = ImageView(context)
         imageView.scaleType = ImageView.ScaleType.FIT_START
         imageView.adjustViewBounds = true
@@ -43,13 +42,11 @@ class ImageGalleryAdapter(
         return images.size
     }
 
-    inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+    inner class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
         View.OnClickListener {
 
-        var photoImageView: ImageView = itemView.findViewById(R.id.image)
-
         init {
-            itemView.setOnClickListener(this)
+            itemView.image.setOnClickListener(this)
         }
 
         override fun onClick(view: View) {

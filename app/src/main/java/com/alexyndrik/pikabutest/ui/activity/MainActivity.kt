@@ -1,18 +1,27 @@
 package com.alexyndrik.pikabutest.ui.activity
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import com.alexyndrik.pikabutest.Const
 import com.alexyndrik.pikabutest.R
+import com.alexyndrik.pikabutest.model.PostModel
 import com.alexyndrik.pikabutest.ui.fragment.FeedFragment
 import com.alexyndrik.pikabutest.ui.fragment.LikedPostsFragment
+import com.alexyndrik.pikabutest.utils.FragmentUtils
 import com.alexyndrik.pikabutest.utils.LikesProvider
+import com.alexyndrik.pikabutest.utils.ServerUtils
 import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var feedFragment: FeedFragment
-    private lateinit var likedPostsFragment: LikedPostsFragment
+    companion object {
+        var posts = MutableLiveData<ArrayList<PostModel>>()
+        var likedPost = MutableLiveData<Int>()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,53 +29,35 @@ class MainActivity : AppCompatActivity() {
 
         LikesProvider.restoreLikedPosts(this)
 
-        feedFragment = FeedFragment()
-        likedPostsFragment = LikedPostsFragment()
-
         if (savedInstanceState == null) {
-            supportFragmentManager
-                .beginTransaction()
-                .add(R.id.root_container, feedFragment)
-                .add(R.id.root_container, likedPostsFragment)
-                .commit()
+            val feedFragment = FragmentUtils.addFragment(supportFragmentManager, FeedFragment(), Const.FEED_FRAGMENT)
+            val likedPostsFragment = FragmentUtils.addFragment(supportFragmentManager, LikedPostsFragment(), Const.LIKED_POSTS_FRAGMENT)
+
+            FragmentUtils.showFragment(supportFragmentManager, feedFragment, likedPostsFragment)
         }
 
-        init()
+        initView()
+        initObservers()
+
+        loadPosts()
     }
 
-    private fun init() {
-        showFeed()
-
-        nav_view.setOnNavigationItemSelectedListener  {
-            var result = false
-            when (it.itemId) {
-                R.id.navigation_feed -> {
-                    showFeed()
-                    result = true
-                }
-                R.id.navigation_liked_posts -> {
-                    showLikedPosts()
-                    result = true
-                }
-            }
-            result
+    private fun initView() {
+        bottom_navigation.setOnNavigationItemSelectedListener  {
+            FragmentUtils.showFragmentById(supportFragmentManager, it.itemId)
         }
     }
 
-    private fun showFeed() {
-        supportFragmentManager
-            .beginTransaction()
-            .show(feedFragment)
-            .hide(likedPostsFragment)
-            .commit()
+    private fun initObservers() {
+        val postsObserver = Observer<List<PostModel>> {
+            progress_bar.visibility = View.GONE
+        }
+        posts.observe(this, postsObserver)
     }
 
-    private fun showLikedPosts() {
-        supportFragmentManager
-            .beginTransaction()
-            .hide(feedFragment)
-            .show(likedPostsFragment)
-            .commit()
+    private fun loadPosts() {
+        progress_bar.visibility = View.VISIBLE
+        ServerUtils.loadFeed(posts)
     }
 
     override fun onPause() {
