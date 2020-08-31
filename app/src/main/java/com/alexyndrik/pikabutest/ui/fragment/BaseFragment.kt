@@ -14,7 +14,6 @@ import com.alexyndrik.pikabutest.model.PikabuPost
 import com.alexyndrik.pikabutest.model.PikabuResponse
 import com.alexyndrik.pikabutest.ui.activity.MainActivity
 import kotlinx.android.synthetic.main.fragment_base.view.*
-import kotlin.reflect.KFunction2
 
 abstract class BaseFragment : Fragment() {
 
@@ -39,29 +38,28 @@ abstract class BaseFragment : Fragment() {
             adapter = PostAdapter(ArrayList(), MainActivity.likedPostLiveData)
             addItemDecoration(DividerItemDecoration(activity, LinearLayoutManager.VERTICAL))
         }
-        showBaseMessage(view)
     }
 
     private fun initObservers(view: View) {
         val postsObserver = Observer<PikabuResponse<ArrayList<PikabuPost>>> {
-            show(view, it.response, it.error, ::doPostsObserver as KFunction2<View, Any, Unit>)
+            show(view, it.response, it.error, ::doPostsObserver as (Any) -> Unit)
         }
 
         MainActivity.postsLiveData.observe(viewLifecycleOwner, postsObserver)
 
         val likedPostObserver = Observer<PikabuResponse<Int>> {
-            show(view, it.response, it.error, ::doLikedPostObserver as KFunction2<View, Any, Unit>)
+            show(view, it.response, it.error, ::doLikedPostObserver as (Any) -> Unit)
         }
 
         MainActivity.likedPostLiveData.observe(viewLifecycleOwner, likedPostObserver)
     }
 
-    private fun show(view: View, response: Any?, error: Exception?, unit: KFunction2<View, Any, Unit>) {
+    private fun show(view: View, response: Any?, error: Exception?, unit: (data: Any) -> Unit) {
         when {
             error != null -> showMessage(view, error.message)
             response != null -> {
                 showFeed(view)
-                unit(view, response)
+                unit(response)
             }
             else -> showMessage(view, null)
         }
@@ -79,8 +77,7 @@ abstract class BaseFragment : Fragment() {
         view.message.text = message ?: getString(R.string.stub_error)
     }
 
-    abstract fun showBaseMessage(view: View)
-    abstract fun doPostsObserver(view: View, posts: ArrayList<PikabuPost>)
-    abstract fun doLikedPostObserver(view: View, id: Int)
+    abstract fun doPostsObserver(posts: ArrayList<PikabuPost>)
+    abstract fun doLikedPostObserver(id: Int)
 
 }
