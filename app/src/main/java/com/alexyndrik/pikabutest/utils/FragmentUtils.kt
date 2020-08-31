@@ -2,8 +2,8 @@ package com.alexyndrik.pikabutest.utils
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import com.alexyndrik.pikabutest.Const
 import com.alexyndrik.pikabutest.R
+import com.alexyndrik.pikabutest.common.Const
 import com.alexyndrik.pikabutest.ui.fragment.FeedFragment
 import com.alexyndrik.pikabutest.ui.fragment.LikedPostsFragment
 

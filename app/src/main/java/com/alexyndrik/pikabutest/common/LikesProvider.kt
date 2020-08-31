@@ -1,9 +1,8 @@
-package com.alexyndrik.pikabutest.utils
+package com.alexyndrik.pikabutest.common
 
 import android.app.Activity
 import android.content.Context
 import android.text.TextUtils
-import com.alexyndrik.pikabutest.Const
 import java.util.*
 
 object LikesProvider {

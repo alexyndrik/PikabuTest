@@ -8,12 +8,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.GridLayoutManager
 import com.alexyndrik.pikabutest.R
 import com.alexyndrik.pikabutest.adapter.ImageGalleryAdapter
-import com.alexyndrik.pikabutest.model.PostModel
+import com.alexyndrik.pikabutest.common.LikesProvider
+import com.alexyndrik.pikabutest.model.PikabuPost
+import com.alexyndrik.pikabutest.model.PikabuResponse
 import kotlinx.android.synthetic.main.view_post.view.*
 
 object PostUtils {
 
-    fun fillPostInfo(itemView: View, post: PostModel, isPost: Boolean, liveData: MutableLiveData<Int>) {
+    fun fillPostInfo(itemView: View, post: PikabuPost, isPost: Boolean, liveData: MutableLiveData<PikabuResponse<Int>>) {
         itemView.post_title.text = post.title
 
         showLike(itemView.is_liked, post.id)
@@ -24,7 +26,7 @@ object PostUtils {
                 LikesProvider.likedPosts.add(post.id)
             showLike(itemView.is_liked, post.id)
 
-            liveData.value = post.id
+            liveData.value = PikabuResponse(post.id)
         }
 
         if (TextUtils.isEmpty(post.body))

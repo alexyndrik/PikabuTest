@@ -5,16 +5,17 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
-import com.alexyndrik.pikabutest.Const
 import com.alexyndrik.pikabutest.R
-import com.alexyndrik.pikabutest.model.PostModel
+import com.alexyndrik.pikabutest.common.Const
+import com.alexyndrik.pikabutest.model.PikabuPost
+import com.alexyndrik.pikabutest.model.PikabuResponse
 import com.alexyndrik.pikabutest.ui.activity.PostActivity
 import com.alexyndrik.pikabutest.utils.PostUtils
 
 
 class PostAdapter(
-    private val posts: ArrayList<PostModel>,
-    private var liveData: MutableLiveData<Int>
+    private val posts: ArrayList<PikabuPost>,
+    private var liveData: MutableLiveData<PikabuResponse<Int>>
 ) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = PostViewHolder(LayoutInflater.from(parent.context), parent)
@@ -33,7 +34,7 @@ class PostAdapter(
             }
     }
 
-    fun notifyItemInsert(post: PostModel) {
+    fun notifyItemInsert(post: PikabuPost) {
         if (posts.contains(post))
             return
         posts.add(post)
@@ -52,9 +53,8 @@ class PostAdapter(
     class PostViewHolder(inflater: LayoutInflater, parent: ViewGroup)
         : RecyclerView.ViewHolder(inflater.inflate(R.layout.view_post, parent, false)) {
 
-        fun bind(post: PostModel, liveData: MutableLiveData<Int>) {
+        fun bind(post: PikabuPost, liveData: MutableLiveData<PikabuResponse<Int>>) {
             itemView.setOnClickListener {
-                println("click ${post.title} -  ${post.id}")
                 val intent = Intent(it.context, PostActivity::class.java)
                 intent.putExtra(Const.POST_ID, post.id)
                 it.context.startActivity(intent)

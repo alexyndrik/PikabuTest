@@ -1,17 +1,20 @@
 package com.alexyndrik.pikabutest.ui.activity
 
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.alexyndrik.pikabutest.Const
 import com.alexyndrik.pikabutest.R
-import com.alexyndrik.pikabutest.model.PostModel
+import com.alexyndrik.pikabutest.common.Const
+import com.alexyndrik.pikabutest.common.LikesProvider
+import com.alexyndrik.pikabutest.model.PikabuPost
+import com.alexyndrik.pikabutest.model.PikabuResponse
 import com.alexyndrik.pikabutest.ui.fragment.FeedFragment
 import com.alexyndrik.pikabutest.ui.fragment.LikedPostsFragment
 import com.alexyndrik.pikabutest.utils.FragmentUtils
-import com.alexyndrik.pikabutest.utils.LikesProvider
 import com.alexyndrik.pikabutest.utils.PikabuServerUtils
 import com.alexyndrik.pikabutest.utils.VolleyUtils
 import kotlinx.android.synthetic.main.activity_main.*
@@ -20,8 +23,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        var postsLiveData = MutableLiveData<ArrayList<PostModel>>()
-        var likedPostLiveData = MutableLiveData<Int>()
+        var postsLiveData = MutableLiveData<PikabuResponse<ArrayList<PikabuPost>>>()
+        var likedPostLiveData = MutableLiveData<PikabuResponse<Int>>()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,16 +54,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initObservers() {
-        val postsObserver = Observer<List<PostModel>> {
+        val postsObserver = Observer<PikabuResponse<ArrayList<PikabuPost>>> {
             progress_bar.visibility = View.GONE
         }
         postsLiveData.observe(this, postsObserver)
     }
 
     private fun loadPosts() {
-        println("main activity load posts")
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        if (activeNetworkInfo == null || !activeNetworkInfo.isConnected) {
+            postsLiveData.value = PikabuResponse(error = Exception(getString(R.string.no_internet)))
+            return
+        }
+
         progress_bar.visibility = View.VISIBLE
-//        PikabuServerUtils.loadFeed(postsLiveData)
         PikabuServerUtils.loadFeed(postsLiveData)
     }
 

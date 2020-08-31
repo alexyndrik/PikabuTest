@@ -8,10 +8,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-import com.alexyndrik.pikabutest.Const
 import com.alexyndrik.pikabutest.R
-import com.alexyndrik.pikabutest.model.PostModel
-import com.alexyndrik.pikabutest.utils.LikesProvider
+import com.alexyndrik.pikabutest.common.Const
+import com.alexyndrik.pikabutest.common.LikesProvider
+import com.alexyndrik.pikabutest.model.PikabuPost
+import com.alexyndrik.pikabutest.model.PikabuResponse
 import com.alexyndrik.pikabutest.utils.PikabuServerUtils
 import com.alexyndrik.pikabutest.utils.PostUtils
 import kotlinx.android.synthetic.main.view_post.*
@@ -27,8 +28,8 @@ class PostActivity : AppCompatActivity() {
 
         postViewModel = PostViewModel()
         val id = intent.getIntExtra(Const.POST_ID, -1)
-        println(id)
-//        if (id == -1)
+        if (id == -1)
+            showError(null)
 
         init()
         loadPost(id)
@@ -37,9 +38,12 @@ class PostActivity : AppCompatActivity() {
     private fun init() {
         post_view.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
 
-        val observer = Observer<PostModel> {
+        val observer = Observer<PikabuResponse<PikabuPost>> {
             progress_bar.visibility = View.GONE
-            PostUtils.fillPostInfo(post_view, it, true, MainActivity.likedPostLiveData)
+            if (it.response != null)
+                PostUtils.fillPostInfo(post_view, it.response, true, MainActivity.likedPostLiveData)
+            else
+                showError(it.error?.message)
         }
         postViewModel.post.observe(this, observer)
     }
@@ -47,6 +51,13 @@ class PostActivity : AppCompatActivity() {
     private fun loadPost(id: Int) {
         progress_bar.visibility = View.VISIBLE
         PikabuServerUtils.loadPost(postViewModel.post, id)
+    }
+
+    private fun showError(errorMessage: String?) {
+        post_view.visibility = View.GONE
+        message.visibility = View.VISIBLE
+
+        message.text = errorMessage ?: getString(R.string.stub_error)
     }
 
     override fun onPause() {
@@ -61,6 +72,6 @@ class PostActivity : AppCompatActivity() {
         super.finish()
     }
 
-    data class PostViewModel(val post: MutableLiveData<PostModel> = MutableLiveData()) : ViewModel()
+    data class PostViewModel(val post: MutableLiveData<PikabuResponse<PikabuPost>> = MutableLiveData()) : ViewModel()
 
 }

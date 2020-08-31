@@ -2,7 +2,7 @@ package com.alexyndrik.pikabutest.model
 
 import org.json.JSONObject
 
-data class PostModel(
+data class PikabuPost(
     var id: Int = 0,
     var title: String = "",
     var body: String = "",
@@ -22,7 +22,7 @@ data class PostModel(
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other is PostModel)
+        if (other is PikabuPost)
             return other.id == id
         return false
     }
