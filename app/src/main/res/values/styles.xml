@@ -9,13 +9,22 @@
 
 	<style name="Title" parent="TextAppearance.AppCompat.Headline">
 		<item name="android:textSize">30sp</item>
-		<item name="android:textAlignment">center</item>
+		<item name="android:textAlignment">viewStart</item>
 		<item name="android:textColor">@color/colorTitle</item>
-		<item name="fontFamily">monospace</item>
+		<item name="android:textStyle">bold|italic</item>
+		<item name="android:fontFamily">serif-monospace</item>
 	</style>
 
-	<style name="Text" parent="TextAppearance.AppCompat.Headline">
+	<style name="SmallTitle" parent="Title">
 		<item name="android:textSize">20sp</item>
+	</style>
+
+	<style name="Text" parent="TextAppearance.AppCompat.Body1">
+		<item name="android:textSize">20sp</item>
+	</style>
+
+	<style name="SmallText" parent="Text">
+		<item name="android:textSize">10sp</item>
 	</style>
 
 </resources>

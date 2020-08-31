@@ -9,9 +9,9 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alexyndrik.pikabutest.R
-import com.alexyndrik.pikabutest.adapter.PostAdapter
 import com.alexyndrik.pikabutest.model.PikabuPost
-import com.alexyndrik.pikabutest.model.PikabuResponse
+import com.alexyndrik.pikabutest.service.PikabuApiClient.Response
+import com.alexyndrik.pikabutest.ui.PostAdapter
 import com.alexyndrik.pikabutest.ui.activity.MainActivity
 import kotlinx.android.synthetic.main.fragment_base.view.*
 
@@ -41,25 +41,25 @@ abstract class BaseFragment : Fragment() {
     }
 
     private fun initObservers(view: View) {
-        val postsObserver = Observer<PikabuResponse<ArrayList<PikabuPost>>> {
-            show(view, it.response, it.error, ::doPostsObserver as (Any) -> Unit)
+        val postsObserver = Observer<Response<ArrayList<PikabuPost>>> {
+            show(view, it.data, it.error, ::doPostsObserver as (Any) -> Unit)
         }
 
         MainActivity.postsLiveData.observe(viewLifecycleOwner, postsObserver)
 
-        val likedPostObserver = Observer<PikabuResponse<Int>> {
-            show(view, it.response, it.error, ::doLikedPostObserver as (Any) -> Unit)
+        val likedPostObserver = Observer<Response<Int>> {
+            show(view, it.data, it.error, ::doLikedPostObserver as (Any) -> Unit)
         }
 
         MainActivity.likedPostLiveData.observe(viewLifecycleOwner, likedPostObserver)
     }
 
-    private fun show(view: View, response: Any?, error: Exception?, unit: (data: Any) -> Unit) {
+    private fun show(view: View, data: Any?, error: Exception?, unit: (data: Any) -> Unit) {
         when {
             error != null -> showMessage(view, error.message)
-            response != null -> {
+            data != null -> {
                 showFeed(view)
-                unit(response)
+                unit(data)
             }
             else -> showMessage(view, null)
         }

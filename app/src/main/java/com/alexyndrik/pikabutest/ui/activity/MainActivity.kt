@@ -5,40 +5,44 @@ import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.alexyndrik.pikabutest.Const
 import com.alexyndrik.pikabutest.R
-import com.alexyndrik.pikabutest.common.Const
-import com.alexyndrik.pikabutest.common.LikesProvider
 import com.alexyndrik.pikabutest.model.PikabuPost
-import com.alexyndrik.pikabutest.model.PikabuResponse
+import com.alexyndrik.pikabutest.service.LikesProvider
+import com.alexyndrik.pikabutest.service.PikabuApiClient
+import com.alexyndrik.pikabutest.service.PikabuApiClient.Response
 import com.alexyndrik.pikabutest.ui.fragment.FeedFragment
 import com.alexyndrik.pikabutest.ui.fragment.LikedPostsFragment
-import com.alexyndrik.pikabutest.utils.FragmentUtils
-import com.alexyndrik.pikabutest.utils.PikabuServerUtils
-import com.alexyndrik.pikabutest.utils.VolleyUtils
+import com.android.volley.RequestQueue
+import com.android.volley.toolbox.Volley
 import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var queue: RequestQueue
+
     companion object {
-        var postsLiveData = MutableLiveData<PikabuResponse<ArrayList<PikabuPost>>>()
-        var likedPostLiveData = MutableLiveData<PikabuResponse<Int>>()
+        var postsLiveData = MutableLiveData<Response<ArrayList<PikabuPost>>>()
+        var likedPostLiveData = MutableLiveData<Response<Int>>()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        VolleyUtils.init(this)
+        queue = Volley.newRequestQueue(this)
         LikesProvider.restoreLikedPosts(this)
 
         if (savedInstanceState == null) {
-            val feedFragment = FragmentUtils.addFragment(supportFragmentManager, FeedFragment(), Const.FEED_FRAGMENT)
-            val likedPostsFragment = FragmentUtils.addFragment(supportFragmentManager, LikedPostsFragment(), Const.LIKED_POSTS_FRAGMENT)
+            val feedFragment = addFragment(supportFragmentManager, FeedFragment(), Const.FragmentTag.FEED_FRAGMENT)
+            val likedPostsFragment = addFragment(supportFragmentManager, LikedPostsFragment(), Const.FragmentTag.LIKED_POSTS_FRAGMENT)
 
-            FragmentUtils.showFragment(supportFragmentManager, feedFragment, likedPostsFragment)
+            switchFragment(supportFragmentManager, feedFragment, likedPostsFragment)
         }
 
         initView()
@@ -49,12 +53,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun initView() {
         bottom_navigation.setOnNavigationItemSelectedListener  {
-            FragmentUtils.showFragmentById(supportFragmentManager, it.itemId)
+            showFragmentById(supportFragmentManager, it.itemId)
         }
     }
 
     private fun initObservers() {
-        val postsObserver = Observer<PikabuResponse<ArrayList<PikabuPost>>> {
+        val postsObserver = Observer<Response<ArrayList<PikabuPost>>> {
             progress_bar.visibility = View.GONE
         }
         postsLiveData.observe(this, postsObserver)
@@ -64,12 +68,48 @@ class MainActivity : AppCompatActivity() {
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetworkInfo = connectivityManager.activeNetworkInfo
         if (activeNetworkInfo == null || !activeNetworkInfo.isConnected) {
-            postsLiveData.value = PikabuResponse(error = Exception(getString(R.string.no_internet)))
+            postsLiveData.value = Response(error = Exception(getString(R.string.no_internet)))
             return
         }
 
         progress_bar.visibility = View.VISIBLE
-        PikabuServerUtils.loadFeed(postsLiveData)
+        PikabuApiClient.loadFeed(queue, postsLiveData)
+    }
+
+    private fun showFragmentById(fragmentManager: FragmentManager, id: Int): Boolean {
+        val feedFragment = fragmentManager.findFragmentByTag(Const.FragmentTag.FEED_FRAGMENT)
+            ?: addFragment(fragmentManager, FeedFragment(), Const.FragmentTag.FEED_FRAGMENT)
+        val likedPostsFragment = fragmentManager.findFragmentByTag(Const.FragmentTag.LIKED_POSTS_FRAGMENT)
+            ?: addFragment(fragmentManager, LikedPostsFragment(), Const.FragmentTag.LIKED_POSTS_FRAGMENT)
+
+        when (id) {
+            R.id.navigation_feed -> {
+                switchFragment(fragmentManager, feedFragment, likedPostsFragment)
+                return true
+            }
+            R.id.navigation_liked_posts -> {
+                switchFragment(fragmentManager, likedPostsFragment, feedFragment)
+                return true
+            }
+        }
+
+        return false
+    }
+
+    private fun addFragment(fragmentManager: FragmentManager, fragment: Fragment, tag: String): Fragment {
+        fragmentManager
+            .beginTransaction()
+            .add(R.id.root_container, fragment, tag)
+            .commit()
+        return fragment
+    }
+
+    private fun switchFragment(fragmentManager: FragmentManager, show: Fragment, hide: Fragment) {
+        fragmentManager
+            .beginTransaction()
+            .show(show)
+            .hide(hide)
+            .commit()
     }
 
     override fun onPause() {
