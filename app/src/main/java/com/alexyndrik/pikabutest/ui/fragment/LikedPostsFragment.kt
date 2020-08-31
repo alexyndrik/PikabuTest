@@ -15,13 +15,13 @@ class LikedPostsFragment : BaseFragment() {
         for (post in posts)
             if (LikesProvider.likedPosts.contains(post.id))
                 likedPosts.add(post)
-        view.feed.adapter = PostAdapter(likedPosts, MainActivity.likedPost)
+        view.feed.adapter = PostAdapter(likedPosts, MainActivity.likedPostLiveData)
         view.feed.adapter?.notifyDataSetChanged()
     }
 
     override fun doLikedPostObserver(view: View, id: Int) {
         if (LikesProvider.likedPosts.contains(id)) {
-            for (post in MainActivity.posts.value!!)
+            for (post in MainActivity.postsLiveData.value!!)
                 if (post.id == id) {
                     (view.feed.adapter as PostAdapter).notifyItemInsert(post)
                     break

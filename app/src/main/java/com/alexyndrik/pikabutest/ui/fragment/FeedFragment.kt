@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.fragment_base.view.*
 class FeedFragment : BaseFragment() {
 
     override fun doPostsObserver(view: View, posts: ArrayList<PostModel>) {
-        view.feed.adapter = PostAdapter(posts, MainActivity.likedPost)
+        view.feed.adapter = PostAdapter(posts, MainActivity.likedPostLiveData)
         view.feed.adapter?.notifyDataSetChanged()
     }
 

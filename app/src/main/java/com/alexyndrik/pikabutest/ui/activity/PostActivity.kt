@@ -12,8 +12,8 @@ import com.alexyndrik.pikabutest.Const
 import com.alexyndrik.pikabutest.R
 import com.alexyndrik.pikabutest.model.PostModel
 import com.alexyndrik.pikabutest.utils.LikesProvider
+import com.alexyndrik.pikabutest.utils.PikabuServerUtils
 import com.alexyndrik.pikabutest.utils.PostUtils
-import com.alexyndrik.pikabutest.utils.ServerUtils
 import kotlinx.android.synthetic.main.view_post.*
 
 
@@ -27,6 +27,7 @@ class PostActivity : AppCompatActivity() {
 
         postViewModel = PostViewModel()
         val id = intent.getIntExtra(Const.POST_ID, -1)
+        println(id)
 //        if (id == -1)
 
         init()
@@ -38,14 +39,14 @@ class PostActivity : AppCompatActivity() {
 
         val observer = Observer<PostModel> {
             progress_bar.visibility = View.GONE
-            PostUtils.fillPostInfo(post_view, it, true, MainActivity.likedPost)
+            PostUtils.fillPostInfo(post_view, it, true, MainActivity.likedPostLiveData)
         }
         postViewModel.post.observe(this, observer)
     }
 
     private fun loadPost(id: Int) {
         progress_bar.visibility = View.VISIBLE
-        ServerUtils.loadPost(postViewModel.post, id)
+        PikabuServerUtils.loadPost(postViewModel.post, id)
     }
 
     override fun onPause() {
@@ -55,7 +56,7 @@ class PostActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val returnIntent = Intent()
-        returnIntent.putExtra(Const.POSITION, intent.getIntExtra(Const.POSITION, -1))
+        returnIntent.putExtra(Const.POST_ID, intent.getIntExtra(Const.POST_ID, -1))
         setResult(RESULT_OK, returnIntent)
         super.finish()
     }

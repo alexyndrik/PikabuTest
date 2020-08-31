@@ -9,6 +9,5 @@ object Const {
     // extra names
     const val LIKED_POSTS = "liked_posts"
     const val POST_ID = "post_id"
-    const val POSITION = "position"
 
 }
