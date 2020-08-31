@@ -1,21 +1,20 @@
-package com.alexyndrik.pikabutest.adapter
+package com.alexyndrik.pikabutest.ui
 
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
+import com.alexyndrik.pikabutest.Const
 import com.alexyndrik.pikabutest.R
-import com.alexyndrik.pikabutest.common.Const
 import com.alexyndrik.pikabutest.model.PikabuPost
-import com.alexyndrik.pikabutest.model.PikabuResponse
+import com.alexyndrik.pikabutest.service.PikabuApiClient.Response
 import com.alexyndrik.pikabutest.ui.activity.PostActivity
-import com.alexyndrik.pikabutest.utils.PostUtils
 
 
 class PostAdapter(
     private val posts: ArrayList<PikabuPost>,
-    private var liveData: MutableLiveData<PikabuResponse<Int>>
+    private var liveData: MutableLiveData<Response<Int>>
 ) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = PostViewHolder(LayoutInflater.from(parent.context), parent)
@@ -53,14 +52,14 @@ class PostAdapter(
     class PostViewHolder(inflater: LayoutInflater, parent: ViewGroup)
         : RecyclerView.ViewHolder(inflater.inflate(R.layout.view_post, parent, false)) {
 
-        fun bind(post: PikabuPost, liveData: MutableLiveData<PikabuResponse<Int>>) {
+        fun bind(post: PikabuPost, liveData: MutableLiveData<Response<Int>>) {
             itemView.setOnClickListener {
                 val intent = Intent(it.context, PostActivity::class.java)
-                intent.putExtra(Const.POST_ID, post.id)
+                intent.putExtra(Const.ExtraName.POST_ID, post.id)
                 it.context.startActivity(intent)
             }
 
-            PostUtils.fillPostInfo(itemView, post, false, liveData)
+            PostPresenter.fillPostInfo(itemView, post, true, liveData)
         }
     }
 

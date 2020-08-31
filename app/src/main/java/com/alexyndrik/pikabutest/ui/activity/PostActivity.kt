@@ -1,56 +1,74 @@
 package com.alexyndrik.pikabutest.ui.activity
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import com.alexyndrik.pikabutest.Const
 import com.alexyndrik.pikabutest.R
-import com.alexyndrik.pikabutest.common.Const
-import com.alexyndrik.pikabutest.common.LikesProvider
 import com.alexyndrik.pikabutest.model.PikabuPost
-import com.alexyndrik.pikabutest.model.PikabuResponse
-import com.alexyndrik.pikabutest.utils.PikabuServerUtils
-import com.alexyndrik.pikabutest.utils.PostUtils
+import com.alexyndrik.pikabutest.service.LikesProvider
+import com.alexyndrik.pikabutest.service.PikabuApiClient
+import com.alexyndrik.pikabutest.service.PikabuApiClient.Response
+import com.alexyndrik.pikabutest.ui.PostPresenter
+import com.android.volley.RequestQueue
+import com.android.volley.toolbox.Volley
+import kotlinx.android.synthetic.main.activity_post.*
 import kotlinx.android.synthetic.main.view_post.*
+import kotlin.properties.Delegates
 
 
 class PostActivity : AppCompatActivity() {
 
+    private var id by Delegates.notNull<Int>()
+    private lateinit var queue: RequestQueue
     private lateinit var postViewModel: PostViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.view_post)
+        setContentView(R.layout.activity_post)
 
+        queue = Volley.newRequestQueue(this)
         postViewModel = PostViewModel()
-        val id = intent.getIntExtra(Const.POST_ID, -1)
+
+        initView()
+        initObservers()
+
+        id = intent.getIntExtra(Const.ExtraName.POST_ID, -1)
         if (id == -1)
             showError(null)
-
-        init()
-        loadPost(id)
+        else
+            loadPost()
     }
 
-    private fun init() {
-        post_view.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+    private fun initView() {
+        if (Build.VERSION.SDK_INT < 23) {
+            post_title.setTextAppearance(this, R.style.Title)
+            post_body.setTextAppearance(this, R.style.Text)
+        } else {
+            post_title.setTextAppearance(R.style.Title)
+            post_body.setTextAppearance(R.style.Text)
+        }
+    }
 
-        val observer = Observer<PikabuResponse<PikabuPost>> {
+    private fun initObservers() {
+        val observer = Observer<Response<PikabuPost>> {
             progress_bar.visibility = View.GONE
-            if (it.response != null)
-                PostUtils.fillPostInfo(post_view, it.response, true, MainActivity.likedPostLiveData)
+            if (it.data != null)
+                PostPresenter.fillPostInfo(post_view, it.data, false, MainActivity.likedPostLiveData)
             else
                 showError(it.error?.message)
         }
         postViewModel.post.observe(this, observer)
     }
 
-    private fun loadPost(id: Int) {
+    private fun loadPost() {
         progress_bar.visibility = View.VISIBLE
-        PikabuServerUtils.loadPost(postViewModel.post, id)
+        PikabuApiClient.loadPost(queue, postViewModel.post, id)
     }
 
     private fun showError(errorMessage: String?) {
@@ -67,11 +85,11 @@ class PostActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val returnIntent = Intent()
-        returnIntent.putExtra(Const.POST_ID, intent.getIntExtra(Const.POST_ID, -1))
+        returnIntent.putExtra(Const.ExtraName.POST_ID, id)
         setResult(RESULT_OK, returnIntent)
         super.finish()
     }
 
-    data class PostViewModel(val post: MutableLiveData<PikabuResponse<PikabuPost>> = MutableLiveData()) : ViewModel()
+    data class PostViewModel(val post: MutableLiveData<Response<PikabuPost>> = MutableLiveData()) : ViewModel()
 
 }

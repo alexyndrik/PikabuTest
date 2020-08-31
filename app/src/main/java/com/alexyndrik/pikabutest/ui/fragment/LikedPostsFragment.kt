@@ -1,9 +1,9 @@
 package com.alexyndrik.pikabutest.ui.fragment
 
 import com.alexyndrik.pikabutest.R
-import com.alexyndrik.pikabutest.adapter.PostAdapter
-import com.alexyndrik.pikabutest.common.LikesProvider
 import com.alexyndrik.pikabutest.model.PikabuPost
+import com.alexyndrik.pikabutest.service.LikesProvider
+import com.alexyndrik.pikabutest.ui.PostAdapter
 import com.alexyndrik.pikabutest.ui.activity.MainActivity
 import kotlinx.android.synthetic.main.fragment_base.*
 
@@ -23,7 +23,7 @@ class LikedPostsFragment : BaseFragment() {
 
     override fun doLikedPostObserver(id: Int) {
         if (LikesProvider.likedPosts.contains(id)) {
-            for (post in MainActivity.postsLiveData.value?.response!!)
+            for (post in MainActivity.postsLiveData.value?.data!!)
                 if (post.id == id) {
                     (feed.adapter as PostAdapter).notifyItemInsert(post)
                     break

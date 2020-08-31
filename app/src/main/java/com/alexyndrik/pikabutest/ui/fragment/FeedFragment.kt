@@ -1,7 +1,7 @@
 package com.alexyndrik.pikabutest.ui.fragment
 
-import com.alexyndrik.pikabutest.adapter.PostAdapter
 import com.alexyndrik.pikabutest.model.PikabuPost
+import com.alexyndrik.pikabutest.ui.PostAdapter
 import com.alexyndrik.pikabutest.ui.activity.MainActivity
 import kotlinx.android.synthetic.main.fragment_base.*
 
