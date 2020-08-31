@@ -1,4 +1,4 @@
-package com.alexyndrik.pikabutest
+package com.alexyndrik.pikabutest.common
 
 object Const {
 

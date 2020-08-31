@@ -1,20 +1,19 @@
 package com.alexyndrik.pikabutest.ui.fragment
 
-import android.view.View
 import com.alexyndrik.pikabutest.adapter.PostAdapter
-import com.alexyndrik.pikabutest.model.PostModel
+import com.alexyndrik.pikabutest.model.PikabuPost
 import com.alexyndrik.pikabutest.ui.activity.MainActivity
-import kotlinx.android.synthetic.main.fragment_base.view.*
+import kotlinx.android.synthetic.main.fragment_base.*
 
 
 class FeedFragment : BaseFragment() {
 
-    override fun doPostsObserver(view: View, posts: ArrayList<PostModel>) {
-        view.feed.adapter = PostAdapter(posts, MainActivity.likedPostLiveData)
-        view.feed.adapter?.notifyDataSetChanged()
+    override fun doPostsObserver(posts: ArrayList<PikabuPost>) {
+        feed.adapter = PostAdapter(posts, MainActivity.likedPostLiveData)
+        feed.adapter?.notifyDataSetChanged()
     }
 
-    override fun doLikedPostObserver(view: View, id: Int) {
-        (view.feed.adapter as PostAdapter).notifyItemChangedById(id)
+    override fun doLikedPostObserver(id: Int) {
+        (feed.adapter as PostAdapter).notifyItemChangedById(id)
     }
 }

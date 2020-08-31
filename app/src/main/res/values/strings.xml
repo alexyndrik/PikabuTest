@@ -1,7 +1,13 @@
 <resources>
 	<string name="app_name">Pikabu Test</string>
 
-	<string name="title_feed">Feed</string>
-	<string name="title_liked_posts">Liked Posts</string>
+	<string name="feed_title">Лента</string>
+	<string name="liked_posts_title">Сохраненные</string>
+
+	<string name="no_posts">Нет постов</string>
+	<string name="no_liked_posts">Нет сохраненных постов</string>
+
+	<string name="no_internet">Отсутствует интернет соединение</string>
+	<string name="stub_error">Что-то пошло не так</string>
 
 </resources>
