@@ -6,16 +6,19 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
+import java.util.*
 
 object PikabuApiClient {
 
     private const val host = "https://pikabu.ru/page/interview/mobile-app/test-api"
 
-    fun loadFeed(queue: RequestQueue, liveData: MutableLiveData<Response<ArrayList<PikabuPost>>>) {
+    fun loadAllPosts(queue: RequestQueue, liveData: MutableLiveData<Response<Map<Int, PikabuPost>>>) {
         val request = JsonArrayRequest(Request.Method.GET, "$host/feed.php", null, { response ->
-            val result = ArrayList<PikabuPost>()
-            for (i in 0 until response.length())
-                result.add(PikabuPost(response.getJSONObject(i)))
+            val result = TreeMap<Int, PikabuPost>()
+            for (i in 0 until response.length()) {
+                val post = PikabuPost(response.getJSONObject(i))
+                result[post.id] = post
+            }
             liveData.value = Response(result)
         }, { error ->
             error.printStackTrace()

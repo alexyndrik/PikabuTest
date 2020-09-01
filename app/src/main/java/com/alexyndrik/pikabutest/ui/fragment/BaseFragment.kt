@@ -41,7 +41,7 @@ abstract class BaseFragment : Fragment() {
     }
 
     private fun initObservers(view: View) {
-        val postsObserver = Observer<Response<ArrayList<PikabuPost>>> {
+        val postsObserver = Observer<Response<Map<Int, PikabuPost>>> {
             show(view, it.data, it.error, ::doPostsObserver as (Any) -> Unit)
         }
 
@@ -77,7 +77,7 @@ abstract class BaseFragment : Fragment() {
         view.message.text = message ?: getString(R.string.stub_error)
     }
 
-    abstract fun doPostsObserver(posts: ArrayList<PikabuPost>)
+    abstract fun doPostsObserver(posts: Map<Int, PikabuPost>)
     abstract fun doLikedPostObserver(id: Int)
 
 }

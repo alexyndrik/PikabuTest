@@ -33,14 +33,14 @@ class PostAdapter(
             }
     }
 
-    fun notifyItemInsert(post: PikabuPost) {
+    fun insertItem(post: PikabuPost) {
         if (posts.contains(post))
-            return
+            removeItemById(post.id)
         posts.add(post)
         notifyItemInserted(posts.size - 1)
     }
 
-    fun notifyItemRemovedById(id: Int) {
+    fun removeItemById(id: Int) {
         for (position in posts.indices)
             if (posts[position].id == id) {
                 posts.removeAt(position)

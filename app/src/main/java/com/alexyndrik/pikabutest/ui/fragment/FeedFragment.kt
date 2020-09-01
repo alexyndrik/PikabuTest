@@ -8,8 +8,8 @@ import kotlinx.android.synthetic.main.fragment_base.*
 
 class FeedFragment : BaseFragment() {
 
-    override fun doPostsObserver(posts: ArrayList<PikabuPost>) {
-        feed.adapter = PostAdapter(posts, MainActivity.likedPostLiveData)
+    override fun doPostsObserver(posts: Map<Int, PikabuPost>) {
+        feed.adapter = PostAdapter(posts.toList().map { it.second } as ArrayList<PikabuPost>, MainActivity.likedPostLiveData)
         feed.adapter?.notifyDataSetChanged()
     }
 
