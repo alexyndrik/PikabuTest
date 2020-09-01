@@ -10,32 +10,30 @@ import kotlinx.android.synthetic.main.fragment_base.*
 
 class LikedPostsFragment : BaseFragment() {
 
-    override fun doPostsObserver(posts: ArrayList<PikabuPost>) {
+    override fun doPostsObserver(posts: Map<Int, PikabuPost>) {
         if (checkIsEmpty()) return
 
         val likedPosts = ArrayList<PikabuPost>()
-        for (post in posts)
-            if (LikesProvider.likedPosts.contains(post.id))
-                likedPosts.add(post)
+        val likedPostsIterator = LikesProvider.iterator()
+        while (likedPostsIterator.hasNext()) {
+            posts[likedPostsIterator.next()]?.let { likedPosts.add(it) }
+        }
+
         feed.adapter = PostAdapter(likedPosts, MainActivity.likedPostLiveData)
         feed.adapter?.notifyDataSetChanged()
     }
 
     override fun doLikedPostObserver(id: Int) {
-        if (LikesProvider.likedPosts.contains(id)) {
-            for (post in MainActivity.postsLiveData.value?.data!!)
-                if (post.id == id) {
-                    (feed.adapter as PostAdapter).notifyItemInsert(post)
-                    break
-                }
+        if (LikesProvider.isLiked(id)) {
+            MainActivity.postsLiveData.value?.data?.get(id)?.let { (feed.adapter as PostAdapter).insertItem(it) }
         } else
-            (feed.adapter as PostAdapter).notifyItemRemovedById(id)
+            (feed.adapter as PostAdapter).removeItemById(id)
 
         checkIsEmpty()
     }
 
     private fun checkIsEmpty() : Boolean {
-        if (LikesProvider.likedPosts.isEmpty()) {
+        if (LikesProvider.likesCount() == 0) {
             view?.let { showMessage(it, getString(R.string.no_liked_posts)) }
             return true
         }

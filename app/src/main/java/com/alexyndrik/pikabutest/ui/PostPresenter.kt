@@ -21,10 +21,10 @@ object PostPresenter {
 
         showLike(itemView.is_liked, post.id)
         itemView.is_liked.setOnClickListener {
-            if (LikesProvider.likedPosts.contains(post.id))
-                LikesProvider.likedPosts.remove(post.id)
+            if (LikesProvider.isLiked(post.id))
+                LikesProvider.unlike(post.id)
             else
-                LikesProvider.likedPosts.add(post.id)
+                LikesProvider.like(post.id)
             showLike(itemView.is_liked, post.id)
 
             liveData.value = Response(post.id)
@@ -45,7 +45,7 @@ object PostPresenter {
     }
 
     private fun showLike(view: ImageButton, id: Int) {
-        if (LikesProvider.likedPosts.contains(id))
+        if (LikesProvider.isLiked(id))
             view.setImageDrawable(ContextCompat.getDrawable(view.context, R.drawable.ic_liked_24))
         else
             view.setImageDrawable(ContextCompat.getDrawable(view.context,

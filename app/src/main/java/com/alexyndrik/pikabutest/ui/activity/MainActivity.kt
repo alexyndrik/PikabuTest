@@ -3,6 +3,7 @@ package com.alexyndrik.pikabutest.ui.activity
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -14,12 +15,12 @@ import com.alexyndrik.pikabutest.R
 import com.alexyndrik.pikabutest.model.PikabuPost
 import com.alexyndrik.pikabutest.service.LikesProvider
 import com.alexyndrik.pikabutest.service.PikabuApiClient
-import com.alexyndrik.pikabutest.service.PikabuApiClient.Response
 import com.alexyndrik.pikabutest.ui.fragment.FeedFragment
 import com.alexyndrik.pikabutest.ui.fragment.LikedPostsFragment
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -27,8 +28,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var queue: RequestQueue
 
     companion object {
-        var postsLiveData = MutableLiveData<Response<ArrayList<PikabuPost>>>()
-        var likedPostLiveData = MutableLiveData<Response<Int>>()
+        var postsLiveData = MutableLiveData<PikabuApiClient.Response<Map<Int, PikabuPost>>>()
+        var likedPostLiveData = MutableLiveData<PikabuApiClient.Response<Int>>()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,32 +49,41 @@ class MainActivity : AppCompatActivity() {
         initView()
         initObservers()
 
-        loadPosts()
+        loadAllPosts(true)
     }
 
     private fun initView() {
         bottom_navigation.setOnNavigationItemSelectedListener  {
             showFragmentById(supportFragmentManager, it.itemId)
         }
+
+        swipe_fragment.setOnRefreshListener {
+            val runnable = Runnable {
+                swipe_fragment.isRefreshing = false
+                postsLiveData.value = PikabuApiClient.Response(TreeMap())
+                loadAllPosts(false)
+            }
+            Handler().postDelayed(runnable, 1000.toLong())
+        }
     }
 
     private fun initObservers() {
-        val postsObserver = Observer<Response<ArrayList<PikabuPost>>> {
+        val postsObserver = Observer<PikabuApiClient.Response<Map<Int, PikabuPost>>> {
             progress_bar.visibility = View.GONE
         }
         postsLiveData.observe(this, postsObserver)
     }
 
-    private fun loadPosts() {
+    private fun loadAllPosts(showProgressBar: Boolean) {
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetworkInfo = connectivityManager.activeNetworkInfo
         if (activeNetworkInfo == null || !activeNetworkInfo.isConnected) {
-            postsLiveData.value = Response(error = Exception(getString(R.string.no_internet)))
+            postsLiveData.value = PikabuApiClient.Response(error = Exception(getString(R.string.no_internet)))
             return
         }
 
-        progress_bar.visibility = View.VISIBLE
-        PikabuApiClient.loadFeed(queue, postsLiveData)
+        if (showProgressBar) progress_bar.visibility = View.VISIBLE
+        PikabuApiClient.loadAllPosts(queue, postsLiveData)
     }
 
     private fun showFragmentById(fragmentManager: FragmentManager, id: Int): Boolean {
