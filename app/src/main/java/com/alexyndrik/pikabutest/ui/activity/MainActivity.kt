@@ -20,7 +20,6 @@ import com.alexyndrik.pikabutest.ui.fragment.LikedPostsFragment
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -60,7 +59,6 @@ class MainActivity : AppCompatActivity() {
         swipe_fragment.setOnRefreshListener {
             val runnable = Runnable {
                 swipe_fragment.isRefreshing = false
-                postsLiveData.value = PikabuApiClient.Response(TreeMap())
                 loadAllPosts(false)
             }
             Handler().postDelayed(runnable, 1000.toLong())
