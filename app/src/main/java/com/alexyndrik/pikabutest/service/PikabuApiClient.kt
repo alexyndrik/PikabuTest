@@ -6,6 +6,7 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
+import com.google.gson.Gson
 import java.util.*
 
 object PikabuApiClient {
@@ -16,7 +17,7 @@ object PikabuApiClient {
         val request = JsonArrayRequest(Request.Method.GET, "$host/feed.php", null, { response ->
             val result = TreeMap<Int, PikabuPost>()
             for (i in 0 until response.length()) {
-                val post = PikabuPost(response.getJSONObject(i))
+                val post = Gson().fromJson(response.getJSONObject(i).toString(), PikabuPost::class.java)
                 result[post.id] = post
             }
             liveData.value = Response(result)
@@ -30,7 +31,7 @@ object PikabuApiClient {
 
     fun loadPost(queue: RequestQueue, liveData: MutableLiveData<Response<PikabuPost>>, id: Int) {
         val request = JsonObjectRequest(Request.Method.GET, "$host/story.php?id=$id", null, { response ->
-            liveData.value = Response(PikabuPost(response))
+            liveData.value = Response(Gson().fromJson(response.toString(), PikabuPost::class.java))
         }, { error ->
             error.printStackTrace()
             liveData.value = Response(error = Exception(error.localizedMessage))
