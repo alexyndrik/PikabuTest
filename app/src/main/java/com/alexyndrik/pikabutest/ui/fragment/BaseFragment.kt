@@ -12,7 +12,8 @@ import com.alexyndrik.pikabutest.R
 import com.alexyndrik.pikabutest.model.PikabuPost
 import com.alexyndrik.pikabutest.service.PikabuApiClient.Response
 import com.alexyndrik.pikabutest.ui.PostAdapter
-import com.alexyndrik.pikabutest.ui.activity.MainActivity
+import com.alexyndrik.pikabutest.ui.livedata.AllPostsLiveData
+import com.alexyndrik.pikabutest.ui.livedata.LikedPostIdLiveData
 import kotlinx.android.synthetic.main.fragment_base.view.*
 
 abstract class BaseFragment : Fragment() {
@@ -35,7 +36,7 @@ abstract class BaseFragment : Fragment() {
         view.feed.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(activity)
-            adapter = PostAdapter(ArrayList(), MainActivity.likedPostLiveData)
+            adapter = PostAdapter(ArrayList())
             addItemDecoration(DividerItemDecoration(activity, LinearLayoutManager.VERTICAL))
         }
     }
@@ -45,13 +46,13 @@ abstract class BaseFragment : Fragment() {
             show(view, it.data, it.error, ::doPostsObserver as (Any) -> Unit)
         }
 
-        MainActivity.postsLiveData.observe(viewLifecycleOwner, postsObserver)
+        AllPostsLiveData.observe(viewLifecycleOwner, postsObserver)
 
         val likedPostObserver = Observer<Response<Int>> {
             show(view, it.data, it.error, ::doLikedPostObserver as (Any) -> Unit)
         }
 
-        MainActivity.likedPostLiveData.observe(viewLifecycleOwner, likedPostObserver)
+        LikedPostIdLiveData.observe(viewLifecycleOwner, likedPostObserver)
     }
 
     private fun show(view: View, data: Any?, error: Exception?, unit: (data: Any) -> Unit) {

@@ -5,9 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import com.alexyndrik.pikabutest.Const
 import com.alexyndrik.pikabutest.R
 import com.alexyndrik.pikabutest.model.PikabuPost
@@ -15,6 +13,7 @@ import com.alexyndrik.pikabutest.service.LikesProvider
 import com.alexyndrik.pikabutest.service.PikabuApiClient
 import com.alexyndrik.pikabutest.service.PikabuApiClient.Response
 import com.alexyndrik.pikabutest.ui.PostPresenter
+import com.alexyndrik.pikabutest.ui.livedata.PostLiveData
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 import kotlinx.android.synthetic.main.activity_post.*
@@ -26,14 +25,12 @@ class PostActivity : AppCompatActivity() {
 
     private var id by Delegates.notNull<Int>()
     private lateinit var queue: RequestQueue
-    private lateinit var postViewModel: PostViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post)
 
         queue = Volley.newRequestQueue(this)
-        postViewModel = PostViewModel()
 
         initView()
         initObservers()
@@ -59,16 +56,16 @@ class PostActivity : AppCompatActivity() {
         val observer = Observer<Response<PikabuPost>> {
             progress_bar.visibility = View.GONE
             if (it.data != null)
-                PostPresenter.fillPostInfo(post_view, it.data, false, MainActivity.likedPostLiveData)
+                PostPresenter.fillPostInfo(post_view, it.data, false)
             else
                 showError(it.error?.message)
         }
-        postViewModel.post.observe(this, observer)
+        PostLiveData.observe(this, observer)
     }
 
     private fun loadPost() {
         progress_bar.visibility = View.VISIBLE
-        PikabuApiClient.loadPost(queue, postViewModel.post, id)
+        PikabuApiClient.loadPost(queue, id)
     }
 
     private fun showError(errorMessage: String?) {
@@ -89,7 +86,5 @@ class PostActivity : AppCompatActivity() {
         setResult(RESULT_OK, returnIntent)
         super.finish()
     }
-
-    data class PostViewModel(val post: MutableLiveData<Response<PikabuPost>> = MutableLiveData()) : ViewModel()
 
 }
