@@ -12,7 +12,7 @@ object LikesProvider {
     private const val name = "pikabutest"
     private const val delimiter = ","
 
-    fun likesCount() = likedPosts.size
+    fun isEmpty() = likedPosts.size == 0
 
     fun iterator() = likedPosts.iterator()
 
